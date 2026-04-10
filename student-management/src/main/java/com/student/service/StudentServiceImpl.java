@@ -22,10 +22,7 @@ public class StudentServiceImpl implements StudentService {
         this.studentRepository = studentRepository;
     }
 
-    public Page<Student> getUsers(int page, int size) {
-        Pageable pageable = (Pageable) PageRequest.of(page, size);
-        return studentRepository.findAll(pageable);
-    }
+
 
     @Override
     public List<Student> getAllStudents() {

@@ -9,5 +9,5 @@ import java.awt.print.Pageable;
 
 
 public interface StudentRepository extends JpaRepository<Student, Long> {
-    Page<Student> findAll(Pageable pageable);
+
 }

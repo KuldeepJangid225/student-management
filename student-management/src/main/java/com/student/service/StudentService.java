@@ -23,5 +23,5 @@ public interface StudentService {
     Student updateStudent(Student student);
 
     void deleteStudentById(Long id);
-    public Page<Student> getUsers(int page, int size);
+
 }

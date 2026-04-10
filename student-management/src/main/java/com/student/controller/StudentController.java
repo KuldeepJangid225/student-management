@@ -53,12 +53,7 @@ public class StudentController {
         model.addAttribute("student", studentService.getStudentById(id));
         return "edit_student";
     }
-    @GetMapping
-    public ResponseEntity<Page<Student>> getAllProducts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "2") int size) {
-        return ResponseEntity.ok(studentService.getUsers(page, size));
-    }
+
 
 
     @PostMapping("/{id}")
