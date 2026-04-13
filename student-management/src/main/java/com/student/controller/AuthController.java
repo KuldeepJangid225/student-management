@@ -2,48 +2,60 @@
 package com.student.controller;
 
 
+import com.student.Enum.Role;
 import com.student.entity.User;
+import com.student.repository.UserRepository;
 import com.student.security.JwtUtil;
 
 import  com.student.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin
 public class AuthController {
 
-    private final UserService userService;
-    private final JwtUtil jwtUtil;
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserRepository repo;
 
-    public AuthController(UserService userService,
-                          JwtUtil jwtUtil,
-                          PasswordEncoder passwordEncoder) {
-        this.userService = userService;
-        this.jwtUtil = jwtUtil;
-        this.passwordEncoder = passwordEncoder;
+    @Autowired
+    private JwtUtil jwtUtil;
+//
+//    @PostMapping("/register")
+//    public String register(@RequestBody User user) {
+//        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+//        repo.save(user);
+//        return "User registered";
+//    }
+@PostMapping("/register")
+public String register(@RequestBody User user) {
+
+    user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+
+    // 🔥 ADD THESE LINES
+    if (user.getRole() == null) {
+        user.setRole(Role.USER);
     }
 
-    // ✅ REGISTER
-    @PostMapping("/register")
-    public String register(@RequestBody User user) {
-        userService.register(user);
-        return "User registered";
-    }
+    user.setActive(true); // ⭐ MOST IMPORTANT
 
-    // ✅ LOGIN (FINAL FIXED)
+    repo.save(user);
+
+    return "User registered";
+}
     @PostMapping("/login")
     public String login(@RequestBody User user) {
+        User dbUser = repo.findByEmail(user.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        User existingUser = userService.findByUsername(user.getUsername());
-
-        if (passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
-            return jwtUtil.generateToken(existingUser.getUsername()); // ✅ TOKEN
+        if (!new BCryptPasswordEncoder().matches(user.getPassword(), dbUser.getPassword())) {
+            throw new RuntimeException("Invalid password");
         }
 
-        throw new RuntimeException("Invalid username or password");
+        return jwtUtil.generateToken(user.getEmail());
     }
 }

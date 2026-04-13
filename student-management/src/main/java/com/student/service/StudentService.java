@@ -6,21 +6,18 @@ Service: StudentService.java
 
 
 
-import java.awt.print.Pageable;
 import java.util.List;
-import com.student.entity.Student;
-import com.student.entity.User;
-import org.springframework.data.domain.Page;
+import com.student.entity.Address;
 
 public interface StudentService {
 
-    List<Student> getAllStudents();
+    List<Address> getAllStudents();
 
-    Student getStudentById(Long id);
+    Address getStudentById(Long id);
 
-    Student saveStudent(Student student);
+    Address saveStudent(Address student);
 
-    Student updateStudent(Student student);
+    Address updateStudent(Address student);
 
     void deleteStudentById(Long id);
 

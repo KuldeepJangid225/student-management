@@ -1,49 +1,47 @@
 package com.student.service;
 
-import java.awt.print.Pageable;
+
 import java.util.List;
 
-import com.student.entity.User;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+
 import org.springframework.stereotype.Service;
-import com.student.entity.Student;
-import com.student.repository.StudentRepository;
+import com.student.entity.Address;
+import com.student.repository.AddressRepository;
 
 
 @Service
 public class StudentServiceImpl implements StudentService {
 
 
-    private final StudentRepository studentRepository;
+    private final AddressRepository studentRepository;
 
 
-    public StudentServiceImpl(StudentRepository studentRepository) {
+    public StudentServiceImpl(AddressRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
 
 
 
     @Override
-    public List<Student> getAllStudents() {
+    public List<Address> getAllStudents() {
         return studentRepository.findAll();
     }
 
 
     @Override
-    public Student saveStudent(Student student) {
+    public Address saveStudent(Address student) {
         return studentRepository.save(student);
     }
 
 
     @Override
-    public Student getStudentById(Long id) {
+    public Address getStudentById(Long id) {
         return studentRepository.findById(id).get();
     }
 
 
     @Override
-    public Student updateStudent(Student student) {
+    public Address updateStudent(Address student) {
         return studentRepository.save(student);
     }
 

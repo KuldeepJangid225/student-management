@@ -2,14 +2,24 @@ package com.student.service;
 
 
 
+
+import com.student.dto.UserFilterRequest;
 import com.student.entity.User;
 import org.springframework.data.domain.Page;
 
-import java.awt.print.Pageable;
-
 public interface UserService {
-    void register(User user);
 
+    User getById(Long id);
 
-    User findByUsername(String username);
+    User findByEmail(String email);
+
+    Page<User> getAllUsers(UserFilterRequest request);
+
+    User createUser(User user);
+
+    User updateUser(Long id, User user);
+
+    User patchUser(Long id, User user);
+
+    void deleteUser(Long id);
 }

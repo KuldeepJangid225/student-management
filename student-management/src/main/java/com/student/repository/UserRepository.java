@@ -2,9 +2,12 @@ package com.student.repository;
 
 import com.student.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUsername(String username); // ✅ FIX
- }
+public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
+
+    Optional<User> findByEmail(String email);
+
+}
