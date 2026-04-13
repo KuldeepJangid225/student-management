@@ -31,7 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        // ✅ Skip auth endpoints
+        // Skip auth endpoints
         if (path.startsWith("/auth")) {
             filterChain.doFilter(request, response);
             return;
@@ -42,13 +42,13 @@ public class JwtFilter extends OncePerRequestFilter {
         String username = null;
         String token = null;
 
-        // ✅ Extract token
+        // Extract token
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             username = jwtUtil.extractUsername(token);
         }
 
-        // ✅ Validate and set authentication
+        // Validate and set authentication
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             if (jwtUtil.validateToken(token)) {

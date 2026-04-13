@@ -3,12 +3,12 @@ package com.student.service;
 import com.student.Enum.Role;
 import com.student.dto.UserFilterRequest;
 import com.student.entity.User;
-
 import com.student.repository.UserRepository;
+import com.student.Specification.UserSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
-import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -17,21 +17,36 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // ✅ GET by ID
+    // ✅ CREATE
+    @Override
+    public User createUser(User user) {
+
+        // Check duplicate email
+        userRepository.findByEmail(user.getEmail()).ifPresent(u -> {
+            throw new RuntimeException("Email already exists");
+        });
+
+        // Encrypt password
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        // Default values
+        if (user.getRole() == null) {
+            user.setRole(Role.USER);
+        }
+
+        user.setActive(true);
+
+        return userRepository.save(user);
+    }
+
+    // GET BY ID
     @Override
     public User getById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 
-    // ✅ GET by Email
-    @Override
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-    }
-
-    // ✅ GET ALL with Pagination + Filter
+    // GET ALL (Pagination + Filter)
     @Override
     public Page<User> getAllUsers(UserFilterRequest request) {
 
@@ -52,22 +67,7 @@ public class UserServiceImpl implements UserService {
         );
     }
 
-    // ✅ POST (Register/Create)
-    @Override
-    public User createUser(User user) {
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        if (user.getRole() == null) {
-            user.setRole(Role.USER);
-        }
-
-        user.setActive(true);
-
-        return userRepository.save(user);
-    }
-
-    // ✅ PUT (Full Update)
+    // UPDATE (PUT - Full)
     @Override
     public User updateUser(Long id, User updatedUser) {
 
@@ -75,17 +75,23 @@ public class UserServiceImpl implements UserService {
 
         existing.setName(updatedUser.getName());
         existing.setEmail(updatedUser.getEmail());
-        existing.setRole(updatedUser.getRole());
-        existing.setActive(updatedUser.getActive());
 
-        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+        existing.setRole(
+                updatedUser.getRole() != null ? updatedUser.getRole() : existing.getRole()
+        );
+
+        existing.setActive(
+                updatedUser.getActive() != null ? updatedUser.getActive() : existing.getActive()
+        );
+
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
             existing.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         }
 
         return userRepository.save(existing);
     }
 
-    // ✅ PATCH (Partial Update)
+    // PATCH (Partial Update)
     @Override
     public User patchUser(Long id, User updatedUser) {
 
@@ -103,18 +109,27 @@ public class UserServiceImpl implements UserService {
         if (updatedUser.getActive() != null)
             existing.setActive(updatedUser.getActive());
 
-        if (updatedUser.getPassword() != null)
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
             existing.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
 
         return userRepository.save(existing);
     }
 
-    // ✅ DELETE (Soft Delete)
+    // DELETE (Soft Delete)
     @Override
     public void deleteUser(Long id) {
 
         User user = getById(id);
-        user.setActive(false); // soft delete
+        user.setActive(false);
+
         userRepository.save(user);
+    }
+
+    // FIND BY EMAIL
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
     }
 }

@@ -10,7 +10,7 @@ public class JwtUtil {
 
     private final String secret = "secretkey";
 
-    // ✅ Generate Token
+    // Generate Token
     public String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
@@ -20,12 +20,12 @@ public class JwtUtil {
                 .compact();
     }
 
-    // ✅ Extract Username
+    // Extract Username
     public String extractUsername(String token) {
         return extractAllClaims(token).getSubject();
     }
 
-    // ✅ Validate Token (VERY IMPORTANT)
+    // Validate Token (VERY IMPORTANT)
     public boolean validateToken(String token) {
         try {
             extractAllClaims(token); // will throw exception if invalid
@@ -44,7 +44,7 @@ public class JwtUtil {
         return false;
     }
 
-    // ✅ Common method
+    //Common method
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(secret)

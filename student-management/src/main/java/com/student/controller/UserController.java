@@ -16,40 +16,40 @@ public class UserController {
 
     private final UserService userService;
 
-    // ✅ SEARCH with filter + pagination
-    @PostMapping("/search")
-    public Page<User> getUsers(@RequestBody UserFilterRequest request) {
-        return userService.getAllUsers(request);
-    }
-
-    // ✅ GET by ID
-    @GetMapping("/{id}")
-    public User getUser(@PathVariable Long id) {
-        return userService.getById(id);
-    }
-
-    // ✅ CREATE (POST)
+    //CREATE
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         return userService.createUser(user);
     }
 
-    // ✅ UPDATE (PUT - full update)
+    // GET BY ID
+    @GetMapping("/{id}")
+    public User getById(@PathVariable Long id) {
+        return userService.getById(id);
+    }
+
+    //GET ALL (Pagination + Filter)
+    @PostMapping("/search")
+    public Page<User> getAll(@RequestBody UserFilterRequest request) {
+        return userService.getAllUsers(request);
+    }
+
+    //UPDATE (PUT - Full)
     @PutMapping("/{id}")
     public User update(@PathVariable Long id, @Valid @RequestBody User user) {
         return userService.updateUser(id, user);
     }
 
-    // ✅ PARTIAL UPDATE (PATCH)
+    // PATCH (Partial Update)
     @PatchMapping("/{id}")
     public User patch(@PathVariable Long id, @RequestBody User user) {
         return userService.patchUser(id, user);
     }
 
-    // ✅ DELETE (Soft delete)
+    // DELETE (Soft Delete)
     @DeleteMapping("/{id}")
     public String delete(@PathVariable Long id) {
         userService.deleteUser(id);
-        return "User soft deleted successfully";
+        return "User deleted successfully";
     }
 }
